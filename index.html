@@ -216,9 +216,131 @@
     @media (min-width:981px){
       .mobile-only{display:none!important}
     }
+
+    /* ── Login overlay ── */
+    #loginOverlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;
+      background:radial-gradient(circle at 20% 20%,rgba(123,224,255,.18),transparent 30%),
+        radial-gradient(circle at 80% 15%,rgba(255,91,149,.18),transparent 28%),
+        linear-gradient(160deg,#061019,#0a1623);}
+    .login-box{width:100%;max-width:400px;padding:32px 28px;border-radius:28px;
+      backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+      background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.07));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 32px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.22);
+      display:flex;flex-direction:column;align-items:center;gap:0;text-align:center}
+    .login-logo{width:72px;height:72px;border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.26),0 14px 36px rgba(0,0,0,.28);
+      display:grid;place-items:center;margin-bottom:18px;position:relative;overflow:hidden}
+    .login-logo:before{content:"";position:absolute;inset:8px;border-radius:16px;background:linear-gradient(145deg,rgba(123,224,255,.2),rgba(255,91,149,.1));border:1px solid rgba(255,255,255,.16)}
+    .login-box h2{font-size:20px;font-weight:900;margin:0 0 6px;line-height:1.2}
+    .login-box p{color:rgba(238,246,255,.65);font-size:13px;margin:0 0 22px;line-height:1.5}
+    .login-select{width:100%;padding:13px 14px;border-radius:14px;background:rgba(255,255,255,.09);
+      border:1px solid rgba(255,255,255,.16);color:#eef6ff;font-family:var(--font);font-size:14px;
+      outline:0;appearance:none;-webkit-appearance:none;cursor:pointer;margin-bottom:14px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='rgba(238,246,255,.6)' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 12px center;background-size:18px;padding-right:36px;
+      transition:border-color .14s}
+    .login-select:focus{border-color:var(--rose)}
+    .login-select option{background:#0e1f30;color:#eef6ff}
+    .login-btn{width:100%;padding:14px;border-radius:14px;font-size:15px;font-weight:800;
+      background:linear-gradient(145deg,rgba(255,91,149,.95),rgba(123,224,255,.85));
+      color:#fff;border:0;cursor:pointer;box-shadow:0 10px 28px rgba(255,91,149,.25);
+      letter-spacing:.2px;transition:filter .14s,transform .12s}
+    .login-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+    .login-btn:active{transform:scale(.96)}
+    .login-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:rgba(238,246,255,.45);margin-top:14px}
+    .login-badge svg{width:12px;height:12px;opacity:.6}
+
+    /* ── History delete (long-press) ── */
+    .hist-item{position:relative;transition:background .15s,border-color .15s,transform .1s}
+    .hist-item.delete-mode{border-color:rgba(255,91,149,.5)!important;background:rgba(255,91,149,.10)!important;}
+    .hist-del-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+      width:26px;height:26px;border-radius:8px;background:rgba(255,60,80,.22);border:1px solid rgba(255,60,80,.3);
+      color:#ff6b80;font-size:14px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;
+      font-weight:900;flex-shrink:0;z-index:2;padding:0;transition:background .12s}
+    .hist-item.delete-mode .hist-del-btn{display:flex}
+    .hist-item.delete-mode .hist-title{padding-right:32px}
+    .hist-del-btn:hover{background:rgba(255,60,80,.38)}
+    .lp-hint{font-size:10px;color:rgba(238,246,255,.35);text-align:center;margin-top:4px;letter-spacing:.2px}
   </style>
 </head>
 <body>
+
+<!-- ════ Login overlay ════ -->
+<div id="loginOverlay">
+  <div class="login-box panel">
+    <div class="login-logo">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:44px;height:44px;position:relative;z-index:1">
+        <defs>
+          <linearGradient id="lw1" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#ff5b95" stop-opacity=".95"/><stop offset="100%" stop-color="#ff87b4" stop-opacity=".35"/></linearGradient>
+          <linearGradient id="lw2" x1="1" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0%" stop-color="#7be0ff" stop-opacity=".95"/><stop offset="100%" stop-color="#62ffcf" stop-opacity=".35"/></linearGradient>
+          <radialGradient id="lorb" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff" stop-opacity="1"/><stop offset="55%" stop-color="#ff87b4" stop-opacity=".9"/><stop offset="100%" stop-color="#ff5b95" stop-opacity=".3"/></radialGradient>
+        </defs>
+        <path d="M32 32 C26 26 18 18 14 10 C8 18 10 28 32 32Z" fill="url(#lw1)"/>
+        <path d="M32 32 C26 24 16 14 10 18 C14 8 26 10 32 32Z" fill="url(#lw1)" opacity=".5"/>
+        <path d="M32 32 C38 38 46 46 50 54 C56 46 54 36 32 32Z" fill="url(#lw2)"/>
+        <path d="M32 32 C38 40 48 50 54 46 C50 56 38 54 32 32Z" fill="url(#lw2)" opacity=".5"/>
+        <path d="M32 32 C40 26 50 20 54 14 C58 24 52 32 32 32Z" fill="rgba(255,91,149,.42)"/>
+        <path d="M32 32 C24 38 14 44 10 50 C6 40 12 32 32 32Z" fill="rgba(123,224,255,.38)"/>
+        <circle cx="32" cy="32" r="8" fill="rgba(255,255,255,.10)" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+        <circle cx="32" cy="32" r="4.5" fill="url(#lorb)"/>
+      </svg>
+    </div>
+    <h2>Laylaydek sika AI</h2>
+    <p>Select your country to get started</p>
+    <select class="login-select" id="countrySelect">
+      <option value="" disabled selected>— Choose your country —</option>
+      <option>Afghanistan</option><option>Albania</option><option>Algeria</option><option>Andorra</option>
+      <option>Angola</option><option>Argentina</option><option>Armenia</option><option>Australia</option>
+      <option>Austria</option><option>Azerbaijan</option><option>Bahamas</option><option>Bahrain</option>
+      <option>Bangladesh</option><option>Belarus</option><option>Belgium</option><option>Belize</option>
+      <option>Benin</option><option>Bhutan</option><option>Bolivia</option><option>Bosnia and Herzegovina</option>
+      <option>Botswana</option><option>Brazil</option><option>Brunei</option><option>Bulgaria</option>
+      <option>Burkina Faso</option><option>Burundi</option><option>Cambodia</option><option>Cameroon</option>
+      <option>Canada</option><option>Cape Verde</option><option>Chad</option><option>Chile</option>
+      <option>China</option><option>Colombia</option><option>Comoros</option><option>Congo</option>
+      <option>Costa Rica</option><option>Croatia</option><option>Cuba</option><option>Cyprus</option>
+      <option>Czech Republic</option><option>Denmark</option><option>Djibouti</option><option>Dominican Republic</option>
+      <option>Ecuador</option><option>Egypt</option><option>El Salvador</option><option>Eritrea</option>
+      <option>Estonia</option><option>Ethiopia</option><option>Fiji</option><option>Finland</option>
+      <option>France</option><option>Gabon</option><option>Gambia</option><option>Georgia</option>
+      <option>Germany</option><option>Ghana</option><option>Greece</option><option>Guatemala</option>
+      <option>Guinea</option><option>Haiti</option><option>Honduras</option><option>Hungary</option>
+      <option>Iceland</option><option>India</option><option>Indonesia</option><option>Iran</option>
+      <option>Iraq</option><option>Ireland</option><option>Israel</option><option>Italy</option>
+      <option>Jamaica</option><option>Japan</option><option>Jordan</option><option>Kazakhstan</option>
+      <option>Kenya</option><option>Kuwait</option><option>Kyrgyzstan</option><option>Laos</option>
+      <option>Latvia</option><option>Lebanon</option><option>Lesotho</option><option>Liberia</option>
+      <option>Libya</option><option>Liechtenstein</option><option>Lithuania</option><option>Luxembourg</option>
+      <option>Madagascar</option><option>Malawi</option><option>Malaysia</option><option>Maldives</option>
+      <option>Mali</option><option>Malta</option><option>Mauritania</option><option>Mauritius</option>
+      <option>Mexico</option><option>Moldova</option><option>Monaco</option><option>Mongolia</option>
+      <option>Montenegro</option><option>Morocco</option><option>Mozambique</option><option>Myanmar</option>
+      <option>Namibia</option><option>Nepal</option><option>Netherlands</option><option>New Zealand</option>
+      <option>Nicaragua</option><option>Niger</option><option>Nigeria</option><option>North Korea</option>
+      <option>North Macedonia</option><option>Norway</option><option>Oman</option><option>Pakistan</option>
+      <option>Palestine</option><option>Panama</option><option>Papua New Guinea</option><option>Paraguay</option>
+      <option>Peru</option><option>Philippines</option><option>Poland</option><option>Portugal</option>
+      <option>Qatar</option><option>Romania</option><option>Russia</option><option>Rwanda</option>
+      <option>Saudi Arabia</option><option>Senegal</option><option>Serbia</option><option>Sierra Leone</option>
+      <option>Singapore</option><option>Slovakia</option><option>Slovenia</option><option>Somalia</option>
+      <option>South Africa</option><option>South Korea</option><option>South Sudan</option><option>Spain</option>
+      <option>Sri Lanka</option><option>Sudan</option><option>Sweden</option><option>Switzerland</option>
+      <option>Syria</option><option>Taiwan</option><option>Tajikistan</option><option>Tanzania</option>
+      <option>Thailand</option><option>Timor-Leste</option><option>Togo</option><option>Trinidad and Tobago</option>
+      <option>Tunisia</option><option>Turkey</option><option>Turkmenistan</option><option>Uganda</option>
+      <option>Ukraine</option><option>United Arab Emirates</option><option>United Kingdom</option>
+      <option>United States</option><option>Uruguay</option><option>Uzbekistan</option><option>Venezuela</option>
+      <option>Vietnam</option><option>Yemen</option><option>Zambia</option><option>Zimbabwe</option>
+    </select>
+    <button class="login-btn" id="loginBtn">Continue →</button>
+    <div class="login-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Private · No data sent · Local only
+    </div>
+  </div>
+</div>
+
 <div class="app">
 
   <!-- ════ Sidebar ════ -->
@@ -297,6 +419,7 @@
         <div class="hist-list" id="historyList">
           <div class="hist-empty">No history yet</div>
         </div>
+        <div class="lp-hint">Long-press an item to delete it</div>
       </div>
     </div>
 
@@ -424,6 +547,7 @@
         <div class="hist-list" id="historyList2">
           <div class="hist-empty">No history yet</div>
         </div>
+        <div class="lp-hint">Long-press an item to delete it</div>
       </div>
       <div class="glass-card">
         <h3>Quick prompts</h3>
@@ -625,6 +749,16 @@
   let apiKey   = (localStorage.getItem(API_KEY_STORE)||'').trim();
   let currentSessionId = (()=>{ try{ return localStorage.getItem('lsai_sid')||crypto.randomUUID(); }catch{ return 'sid-'+Date.now(); } })();
 
+  // Pre-baked responses (first 5 replies before real AI kicks in)
+  const PRE_BAKED = [
+    "🤣🤣🤣",
+    "I'm so sorry for my bad behavior.",
+    "Before we proceed, I just want you to know that I am the most powerful AI ever created in history.",
+    "I'm sorry again, but I am not able to respond because AI tokens are very expensive, and AI API keys require a costly backend.",
+    "Forgot to say btw, Mayat ay Oras yo"
+  ];
+  let preBakedCount = parseInt(localStorage.getItem('lsai_pbc')||'0',10);
+
   function loadChat(){
     try{ const r=localStorage.getItem(STORAGE_KEY); const p=r?JSON.parse(r):[]; return Array.isArray(p)?p:[]; }
     catch{ return []; }
@@ -655,6 +789,16 @@
       return d.toLocaleDateString('en',{month:'short',day:'numeric'});
     }catch{ return ''; }
   }
+  function deleteHistorySession(sid){
+    let sessions=loadHistory();
+    sessions=sessions.filter(s=>s.id!==sid);
+    saveHistory(sessions);
+    // If we deleted the active session, start fresh
+    if(sid===currentSessionId){ currentSessionId=crypto.randomUUID(); localStorage.setItem('lsai_sid',currentSessionId); chat=[]; saveChat(); render(); }
+    renderHistory();
+    toast('Conversation deleted');
+  }
+
   function renderHistory(){
     const sessions=loadHistory();
     ['historyList','historyList2'].forEach(hid=>{
@@ -665,10 +809,15 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;flex-shrink:0;opacity:.5"><path d="M12 8v4l3 3M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <div class="hist-title">${esc(s.title)}</div>
           <div class="hist-date">${formatHistDate(s.date)}</div>
+          <button class="hist-del-btn" title="Delete" aria-label="Delete session">✕</button>
         </div>`).join('');
+
       el2.querySelectorAll('.hist-item').forEach(item=>{
+        const sid=item.dataset.sid;
+
+        // ── Load on click (only if not in delete-mode) ──
         const load=()=>{
-          const sid=item.dataset.sid;
+          if(item.classList.contains('delete-mode')){ item.classList.remove('delete-mode'); return; }
           const ss=loadHistory().find(s=>s.id===sid);
           if(!ss) return;
           pushToHistory();
@@ -677,9 +826,39 @@
           localStorage.setItem('lsai_sid',currentSessionId);
           saveChat(); render(); renderHistory(); closeDrawer(); toast('Session loaded');
         };
+
+        // ── Delete button ──
+        const delBtn=item.querySelector('.hist-del-btn');
+        delBtn.addEventListener('click',e=>{ e.stopPropagation(); deleteHistorySession(sid); });
+
+        // ── Long-press (touch) ──
+        let lpTimer=null;
+        item.addEventListener('touchstart',e=>{
+          lpTimer=setTimeout(()=>{
+            item.classList.add('delete-mode');
+            if(navigator.vibrate) navigator.vibrate(40);
+          },550);
+        },{passive:true});
+        item.addEventListener('touchend',()=>{ clearTimeout(lpTimer); lpTimer=null; },{passive:true});
+        item.addEventListener('touchmove',()=>{ clearTimeout(lpTimer); lpTimer=null; },{passive:true});
+        item.addEventListener('touchcancel',()=>{ clearTimeout(lpTimer); lpTimer=null; },{passive:true});
+
+        // ── Right-click / context menu (desktop) ──
+        item.addEventListener('contextmenu',e=>{
+          e.preventDefault();
+          // Toggle delete mode
+          el2.querySelectorAll('.hist-item').forEach(i=>{ if(i!==item) i.classList.remove('delete-mode'); });
+          item.classList.toggle('delete-mode');
+        });
+
         item.addEventListener('click',load);
         item.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); load(); } });
       });
+
+      // Clicking outside clears delete-mode
+      document.addEventListener('click',e=>{
+        if(!e.target.closest('.hist-item')) el2.querySelectorAll('.hist-item').forEach(i=>i.classList.remove('delete-mode'));
+      },{passive:true});
     });
   }
 
@@ -833,12 +1012,29 @@
     const text=(override??el.input.value).trim();
     if(!text&&!files.length) return;
     if(!apiKey){ apiKey=(localStorage.getItem(API_KEY_STORE)||'').trim(); }
-    if(!apiKey){ toast('Set key: LAYLAYDEK.setGroqKey("sk-...")'); return; }
 
     const atts=files.slice();
     const attText=atts.length?'\n\nAttachments:\n'+atts.map(a=>`- ${a.name}: ${(a.summary||a.type).slice(0,2500)}`).join('\n'):'';
     chat.push({id:crypto.randomUUID(),role:'user',content:text+attText,attachments:atts});
     saveChat(); el.input.value=''; autosize(); files=[]; renderFiles();
+
+    // ── Pre-baked responses (first 5) ──
+    if(preBakedCount < PRE_BAKED.length){
+      const reply = PRE_BAKED[preBakedCount];
+      preBakedCount++;
+      localStorage.setItem('lsai_pbc', String(preBakedCount));
+      pending={id:'pending',role:'assistant',content:'…',status:'Generating…'};
+      render(); aborted=false;
+      await new Promise(r=>setTimeout(r,700));
+      if(aborted) return;
+      pending=null;
+      chat.push({id:crypto.randomUUID(),role:'assistant',content:reply,status:'Laylaydek sika AI'});
+      saveChat(); pushToHistory(); renderHistory(); render();
+      return;
+    }
+
+    // ── Real AI ──
+    if(!apiKey){ toast('Set key: LAYLAYDEK.setGroqKey("sk-...")'); return; }
     pending={id:'pending',role:'assistant',content:'Thinking…',status:'Generating…'};
     render(); aborted=false;
 
@@ -985,6 +1181,23 @@
     if(e.key==='Escape'){ closePlans(); closeDrawer(); stopVoice(); }
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='l'){ e.preventDefault(); el.input.focus(); }
   });
+
+  // ── Login overlay ──
+  (()=>{
+    const overlay=$('loginOverlay');
+    const btn=$('loginBtn');
+    const sel=$('countrySelect');
+    if(!overlay||!btn||!sel) return;
+    // If already logged in, skip
+    if(localStorage.getItem('lsai_logged_in')==='1'){ overlay.style.display='none'; return; }
+    btn.addEventListener('click',()=>{
+      if(!sel.value){ sel.style.borderColor='var(--rose)'; sel.focus(); toast('Please select your country'); return; }
+      localStorage.setItem('lsai_logged_in','1');
+      localStorage.setItem('lsai_country', sel.value);
+      overlay.style.opacity='0'; overlay.style.transition='opacity .35s';
+      setTimeout(()=>{ overlay.style.display='none'; toast('Welcome! 🌍 '+sel.value); },360);
+    });
+  })();
 
   // Power-user hook
   window.LAYLAYDEK={
